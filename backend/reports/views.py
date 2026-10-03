@@ -12,6 +12,7 @@ from .models import Report, Upvote, StatusUpdate
 from .serializers import (
     ReportCreateSerializer, ReportListSerializer, ReportDetailSerializer,
 )
+from .emails import send_status_change_email
 
 
 class ReportListCreateView(generics.ListCreateAPIView):
@@ -131,6 +132,8 @@ class ReportStatusUpdateView(APIView):
             note=note,
             updated_by=request.user,
         )
+
+        send_status_change_email(report, old_status, new_status, note)
 
         return Response({
             "id": report.id,
