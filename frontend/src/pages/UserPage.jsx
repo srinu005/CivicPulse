@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { getCurrentUser, clearTokens, isLoggedIn } from "../api/client";
 
 export default function UserPage() {
@@ -48,9 +48,12 @@ export default function UserPage() {
         </div>
       )}
 
-      {user.role === "citizen" && (
-        <p style={{ color: "#64748b" }}>You can submit and track pollution reports here (coming in Phase 2).</p>
-      )}
+      <div style={{ display: "flex", gap: 10, justifyContent: "center", margin: "16px 0", flexWrap: "wrap" }}>
+        <Link to="/reports" style={linkButtonStyle}>View Reports Map</Link>
+        {user.role === "citizen" && (
+          <Link to="/report/new" style={linkButtonStyle}>+ Report an Issue</Link>
+        )}
+      </div>
 
       <button onClick={handleLogout} style={buttonStyle}>Logout</button>
     </div>
@@ -72,3 +75,4 @@ function badgeStyle(role) {
 const containerStyle = { maxWidth: 420, margin: "80px auto", textAlign: "center", fontFamily: "sans-serif" };
 const officerBoxStyle = { background: "#f1f5f9", borderRadius: 8, padding: 16, margin: "16px 0", textAlign: "left" };
 const buttonStyle = { marginTop: 16, padding: "10px 24px", background: "crimson", color: "white", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 };
+const linkButtonStyle = { padding: "8px 16px", background: "#2563eb", color: "white", borderRadius: 4, textDecoration: "none", fontWeight: 600, fontSize: 14 };

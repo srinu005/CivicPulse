@@ -49,3 +49,62 @@ export function clearTokens() {
 export function isLoggedIn() {
   return !!localStorage.getItem("access_token");
 }
+
+// --- Reports (Phase 3) ---
+
+export function listReports(filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v))
+  ).toString();
+  return apiRequest(`/api/reports/${params ? `?${params}` : ""}`);
+}
+
+export function getReport(id) {
+  return apiRequest(`/api/reports/${id}/`);
+}
+
+// Report submission needs multipart/form-data (because of the photo upload),
+// so this bypasses apiRequest's JSON-only helper and builds FormData directly.
+export async function createReport(form) {
+  const token = localStorage.getItem("access_token");
+  const formData = new FormData();
+  formData.append("category", form.category);
+  formData.append("description", form.description);
+  formData.append("latitude", form.latitude);
+  formData.append("longitude", form.longitude);
+  formData.append("severity", form.severity);
+  if (form.address) formData.append("address", form.address);
+  if (form.photo) formData.append("photo", form.photo);
+
+  const res = await fetch(`${API_URL}/api/reports/`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` }, // no Content-Type -- browser sets the multipart boundary
+    body: formData,
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message = Object.values(data).flat().join(" ") || "Failed to submit report";
+    throw new Error(message);
+  }
+  return data;
+}
+
+export const upvoteReport = (id) =>
+  apiRequest(`/api/reports/${id}/upvote/`, { method: "POST", auth: true });
+
+export const CATEGORY_LABELS = {
+  air: "Air Pollution",
+  water: "Water Pollution",
+  garbage: "Garbage / Waste",
+  noise: "Noise Pollution",
+  plastic: "Plastic Dumping",
+  other: "Other",
+};
+
+export const STATUS_COLORS = {
+  pending: "#d97706",
+  in_progress: "#2563eb",
+  resolved: "#16a34a",
+  rejected: "#dc2626",
+};

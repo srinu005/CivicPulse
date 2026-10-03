@@ -7,10 +7,13 @@ export default function HomePage() {
       <p style={{ color: "#475569" }}>
         Report pollution issues in your area and track them through to resolution.
       </p>
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24 }}>
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
         <Link to="/login" style={buttonStyle}>Login</Link>
         <Link to="/register" style={{ ...buttonStyle, background: "#fff", color: "#2563eb", border: "1px solid #2563eb" }}>
           Register
+        </Link>
+        <Link to="/reports" style={{ ...buttonStyle, background: "#f1f5f9", color: "#1e293b", border: "1px solid #cbd5e1" }}>
+          View Reports Map
         </Link>
       </div>
     </div>
