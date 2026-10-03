@@ -53,6 +53,9 @@ export default function UserPage() {
         {user.role === "citizen" && (
           <Link to="/report/new" style={linkButtonStyle}>+ Report an Issue</Link>
         )}
+        {(user.role === "officer" || user.role === "admin") && (
+          <Link to="/dashboard" style={{ ...linkButtonStyle, background: "#16a34a" }}>Officer Dashboard</Link>
+        )}
       </div>
 
       <button onClick={handleLogout} style={buttonStyle}>Logout</button>

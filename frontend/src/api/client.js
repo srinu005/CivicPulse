@@ -108,3 +108,15 @@ export const STATUS_COLORS = {
   resolved: "#16a34a",
   rejected: "#dc2626",
 };
+
+// --- Officer dashboard (Phase 4) ---
+
+export const getDashboardStats = () =>
+  apiRequest("/api/dashboard/stats/", { auth: true });
+
+export const updateReportStatus = (id, newStatus, note) =>
+  apiRequest(`/api/reports/${id}/status/`, {
+    method: "PATCH",
+    auth: true,
+    body: { status: newStatus, note },
+  });

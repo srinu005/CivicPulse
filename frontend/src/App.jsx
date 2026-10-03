@@ -6,6 +6,7 @@ import UserPage from "./pages/UserPage";
 import ReportsMapPage from "./pages/ReportsMapPage";
 import ReportFormPage from "./pages/ReportFormPage";
 import ReportDetailPage from "./pages/ReportDetailPage";
+import OfficerDashboardPage from "./pages/OfficerDashboardPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/reports" element={<ReportsMapPage />} />
         <Route path="/report/new" element={<ReportFormPage />} />
         <Route path="/reports/:id" element={<ReportDetailPage />} />
+        <Route path="/dashboard" element={<OfficerDashboardPage />} />
       </Routes>
     </BrowserRouter>
   );

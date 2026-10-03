@@ -1,11 +1,14 @@
+from datetime import timedelta
+
 from django.db.models import Count
+from django.utils import timezone
 from rest_framework import generics, permissions, status as http_status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from accounts.permissions import IsOfficer
-from .models import Report, Upvote
+from .models import Report, Upvote, StatusUpdate
 from .serializers import (
     ReportCreateSerializer, ReportListSerializer, ReportDetailSerializer,
 )
@@ -134,4 +137,57 @@ class ReportStatusUpdateView(APIView):
             "old_status": old_status,
             "new_status": new_status,
             "note": note,
+        })
+
+
+class DashboardStatsView(APIView):
+    """
+    GET /api/dashboard/stats/ -- Officer only.
+    Returns aggregate counts for the dashboard: status breakdown, category
+    breakdown, average resolution time, and a weekly resolution trend
+    (last 6 weeks) -- all computed with DB aggregation, not in Python loops.
+    """
+    permission_classes = [IsOfficer]
+
+    def get(self, request):
+        status_counts = dict(
+            Report.objects.values_list("status").annotate(c=Count("id")).order_by()
+        )
+        category_counts = dict(
+            Report.objects.values_list("category").annotate(c=Count("id")).order_by()
+        )
+
+        # Average resolution time: time between a report's creation and the
+        # StatusUpdate row where new_status == 'resolved'.
+        resolved_updates = StatusUpdate.objects.filter(new_status="resolved").select_related("report")
+        durations = [
+            (u.timestamp - u.report.created_at).total_seconds()
+            for u in resolved_updates
+        ]
+        avg_resolution_days = round(sum(durations) / len(durations) / 86400, 1) if durations else None
+
+        # Weekly resolution trend -- last 6 weeks, oldest first.
+        trend = []
+        today = timezone.now().date()
+        for i in range(5, -1, -1):
+            week_start = today - timedelta(days=today.weekday() + 7 * i)
+            week_end = week_start + timedelta(days=7)
+            count = StatusUpdate.objects.filter(
+                new_status="resolved",
+                timestamp__date__gte=week_start,
+                timestamp__date__lt=week_end,
+            ).count()
+            trend.append({"week_start": week_start.isoformat(), "resolved": count})
+
+        return Response({
+            "status_counts": {
+                "pending": status_counts.get("pending", 0),
+                "in_progress": status_counts.get("in_progress", 0),
+                "resolved": status_counts.get("resolved", 0),
+                "rejected": status_counts.get("rejected", 0),
+            },
+            "category_counts": category_counts,
+            "avg_resolution_days": avg_resolution_days,
+            "resolution_trend": trend,
+            "total_reports": sum(status_counts.values()),
         })
