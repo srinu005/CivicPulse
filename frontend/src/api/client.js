@@ -120,3 +120,19 @@ export const updateReportStatus = (id, newStatus, note) =>
     auth: true,
     body: { status: newStatus, note },
   });
+
+// --- Officer provisioning (Phase 6, Super Admin only) ---
+
+export const listOfficers = () =>
+  apiRequest("/api/officers/", { auth: true });
+
+export const createOfficer = (form) =>
+  apiRequest("/api/officers/", { method: "POST", auth: true, body: form });
+
+export const DESIGNATION_LABELS = {
+  MDO: "Mandal Development Officer",
+  MRO: "Mandal Revenue Officer",
+  MUNICIPAL: "Municipal Officer",
+  POLLUTION_BOARD: "Pollution Control Board Officer",
+  OTHER: "Other Designated Authority",
+};

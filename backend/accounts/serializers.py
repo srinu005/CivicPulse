@@ -46,6 +46,18 @@ class UserSerializer(serializers.ModelSerializer):
         return "citizen"
 
 
+class OfficerListSerializer(serializers.ModelSerializer):
+    """Used for GET /api/officers/ -- Super Admin's view of all provisioned officers."""
+
+    username = serializers.CharField(source="user.username", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    is_active = serializers.BooleanField(source="user.is_active", read_only=True)
+
+    class Meta:
+        model = OfficerProfile
+        fields = ["id", "username", "email", "is_active", "designation", "department", "jurisdiction_area", "official_email", "created_at"]
+
+
 class OfficerCreateSerializer(serializers.Serializer):
     """
     Used by the Super-Admin-only officer provisioning endpoint.
@@ -84,3 +96,17 @@ class OfficerCreateSerializer(serializers.Serializer):
             official_email=validated_data["official_email"],
         )
         return officer_profile
+
+    def to_representation(self, instance):
+        # `instance` here is the OfficerProfile created above -- username/email
+        # live on the related User, not on OfficerProfile itself, so we build
+        # the response explicitly instead of relying on field auto-lookup.
+        return {
+            "id": instance.user.id,
+            "username": instance.user.username,
+            "email": instance.user.email,
+            "designation": instance.designation,
+            "department": instance.department,
+            "jurisdiction_area": instance.jurisdiction_area,
+            "official_email": instance.official_email,
+        }

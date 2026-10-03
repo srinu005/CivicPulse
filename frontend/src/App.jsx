@@ -7,6 +7,7 @@ import ReportsMapPage from "./pages/ReportsMapPage";
 import ReportFormPage from "./pages/ReportFormPage";
 import ReportDetailPage from "./pages/ReportDetailPage";
 import OfficerDashboardPage from "./pages/OfficerDashboardPage";
+import OfficerManagementPage from "./pages/OfficerManagementPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/report/new" element={<ReportFormPage />} />
         <Route path="/reports/:id" element={<ReportDetailPage />} />
         <Route path="/dashboard" element={<OfficerDashboardPage />} />
+        <Route path="/admin/officers" element={<OfficerManagementPage />} />
       </Routes>
     </BrowserRouter>
   );
