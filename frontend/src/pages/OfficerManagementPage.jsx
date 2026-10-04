@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   getCurrentUser, listOfficers, createOfficer, isLoggedIn, DESIGNATION_LABELS,
 } from "../api/client";
+import { color, font, navLinkStyle, buttonPrimary } from "../theme";
+import PageNav from "../components/PageNav";
 
 const EMPTY_FORM = {
   username: "", email: "", password: "",
@@ -59,22 +61,21 @@ export default function OfficerManagementPage() {
     }
   };
 
-  if (!user) return <div style={{ padding: 40, fontFamily: "sans-serif" }}>Loading...</div>;
+  if (!user) return <div style={{ padding: 40, fontFamily: font.body, color: color.inkSoft }}>Loading...</div>;
 
   return (
-    <div style={{ fontFamily: "sans-serif" }}>
-      <nav style={navStyle}>
-        <Link to="/" style={{ fontWeight: 700, color: "#1e3a5f", textDecoration: "none" }}>CivicPulse Admin</Link>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Link to="/dashboard" style={navLinkStyle}>Reports Dashboard</Link>
-          <Link to="/user" style={navLinkStyle}>My Account</Link>
-        </div>
-      </nav>
+    <div style={{ fontFamily: font.body, background: color.paper, minHeight: "100vh" }}>
+      <PageNav>
+        <Link to="/dashboard" style={navLinkStyle}>Reports Dashboard</Link>
+        <Link to="/user" style={navLinkStyle}>My Account</Link>
+      </PageNav>
 
-      <div style={{ padding: 24, display: "flex", gap: 24, flexWrap: "wrap" }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: 32, display: "flex", gap: 32, flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 360px" }}>
-          <h2 style={{ marginTop: 0 }}>Provision a New Officer</h2>
-          <p style={{ color: "#64748b", fontSize: 14 }}>
+          <h2 style={{ marginTop: 0, fontFamily: font.display, fontWeight: 500, color: color.tealDark, fontSize: 24 }}>
+            Provision a New Officer
+          </h2>
+          <p style={{ color: color.inkSoft, fontSize: 14, lineHeight: 1.6 }}>
             This is the only way an officer account can be created -- officers cannot self-register.
             Use the officer's verified official email and designation.
           </p>
@@ -105,21 +106,23 @@ export default function OfficerManagementPage() {
             <label style={labelStyle}>Official Email (verification)</label>
             <input name="official_email" type="email" value={form.official_email} onChange={handleChange} required placeholder="name@gov.in" style={inputStyle} />
 
-            {error && <p style={{ color: "crimson", fontSize: 14 }}>{error}</p>}
-            {success && <p style={{ color: "#16a34a", fontSize: 14 }}>{success}</p>}
+            {error && <p style={{ color: color.status.rejected, fontSize: 14 }}>{error}</p>}
+            {success && <p style={{ color: color.status.resolved, fontSize: 14 }}>{success}</p>}
 
-            <button type="submit" disabled={loading} style={buttonStyle}>
+            <button type="submit" disabled={loading} style={{ ...buttonPrimary, width: "100%", marginTop: 10 }}>
               {loading ? "Creating..." : "Create Officer Account"}
             </button>
           </form>
         </div>
 
         <div style={{ flex: "1 1 420px" }}>
-          <h2 style={{ marginTop: 0 }}>Provisioned Officers ({officers.length})</h2>
-          <div style={{ overflowX: "auto" }}>
+          <h2 style={{ marginTop: 0, fontFamily: font.display, fontWeight: 500, color: color.tealDark, fontSize: 24 }}>
+            Provisioned Officers ({officers.length})
+          </h2>
+          <div style={{ overflowX: "auto", background: color.paperRaised, border: `1px solid ${color.line}`, borderRadius: 3 }}>
             <table style={tableStyle}>
               <thead>
-                <tr style={{ textAlign: "left", borderBottom: "2px solid #e2e8f0" }}>
+                <tr style={{ textAlign: "left", borderBottom: `2px solid ${color.line}` }}>
                   <th style={thStyle}>Username</th>
                   <th style={thStyle}>Designation</th>
                   <th style={thStyle}>Department</th>
@@ -129,7 +132,7 @@ export default function OfficerManagementPage() {
               </thead>
               <tbody>
                 {officers.map((o) => (
-                  <tr key={o.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                  <tr key={o.id} style={{ borderBottom: `1px solid ${color.line}` }}>
                     <td style={tdStyle}>{o.username}</td>
                     <td style={tdStyle}>{o.designation}</td>
                     <td style={tdStyle}>{o.department}</td>
@@ -139,7 +142,7 @@ export default function OfficerManagementPage() {
                 ))}
               </tbody>
             </table>
-            {officers.length === 0 && <p style={{ color: "#64748b" }}>No officers provisioned yet.</p>}
+            {officers.length === 0 && <p style={{ color: color.inkSoft, padding: 16 }}>No officers provisioned yet.</p>}
           </div>
         </div>
       </div>
@@ -147,11 +150,8 @@ export default function OfficerManagementPage() {
   );
 }
 
-const navStyle = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 24px", borderBottom: "1px solid #e2e8f0" };
-const navLinkStyle = { color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 };
-const labelStyle = { display: "block", fontSize: 13, fontWeight: 600, color: "#334155", marginBottom: 4, marginTop: 10 };
-const inputStyle = { width: "100%", padding: 9, marginBottom: 6, boxSizing: "border-box", border: "1px solid #cbd5e1", borderRadius: 4, fontFamily: "inherit" };
-const buttonStyle = { width: "100%", padding: 10, background: "#2563eb", color: "white", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600, marginTop: 10 };
+const labelStyle = { display: "block", fontSize: 13, fontWeight: 600, color: color.tealDark, marginBottom: 4, marginTop: 10 };
+const inputStyle = { width: "100%", padding: 9, marginBottom: 6, boxSizing: "border-box", border: `1.5px solid ${color.line}`, borderRadius: 3, fontFamily: font.body, background: color.paperRaised };
 const tableStyle = { width: "100%", borderCollapse: "collapse", fontSize: 13 };
-const thStyle = { padding: "8px 10px", fontSize: 11, color: "#64748b", textTransform: "uppercase" };
-const tdStyle = { padding: "8px 10px" };
+const thStyle = { padding: "10px 12px", fontSize: 11, color: color.inkSoft, textTransform: "uppercase" };
+const tdStyle = { padding: "10px 12px", color: color.ink };
