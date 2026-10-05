@@ -17,7 +17,7 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: civicpulse-backend.onrender.com   # update to your actual Render hostname
+        value: civicpulse-backend-6wo2.onrender.com   # your actual assigned Render hostname
       - key: DATABASE_URL
         sync: false                  # paste your Neon connection string manually in the dashboard
       - key: CORS_ALLOWED_ORIGINS
