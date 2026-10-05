@@ -4,7 +4,12 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    # Render's FREE tier has no Shell access and does not support preDeployCommand,
+    # so migrations + superuser creation run here, in the build step, instead.
+    # Both are safe to run on every single deploy: `migrate` only applies new
+    # migrations (no-op if none), and create_superuser_if_not_exists checks
+    # first and skips if that username already exists.
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py create_superuser_if_not_exists"
     startCommand: "gunicorn core.wsgi:application"
     envVars:
       - key: DJANGO_SECRET_KEY
@@ -21,3 +26,9 @@ services:
         sync: false                  # same frontend URL, used inside notification emails
       - key: EMAIL_BACKEND
         value: django.core.mail.backends.console.EmailBackend   # switch to smtp.EmailBackend + Gmail vars for real email
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false                  # pick your own admin username
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false                  # your real email, for password-reset purposes later
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false                  # pick a strong password -- this logs into /admin/ and provisions officers
