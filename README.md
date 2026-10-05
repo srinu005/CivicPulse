@@ -122,7 +122,7 @@ See [`render.yaml`](./render.yaml) for the backend Blueprint. The frontend deplo
 Netlify from the `frontend/` directory (`npm run build`, publish `frontend/dist`).
 Full write-up of the deployment process, including the free-tier gotchas (no Shell
 access, 30-day database expiry on Render's own Postgres, which is why this project
-uses Neon instead), is in [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md).
+uses Neon instead).
 
 ## License
 
