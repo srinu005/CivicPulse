@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: civicpulse-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn core.wsgi:application"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true          # Render generates a strong random secret for you
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: civicpulse-backend.onrender.com   # update to your actual Render hostname
+      - key: DATABASE_URL
+        sync: false                  # paste your Neon connection string manually in the dashboard
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false                  # paste your Netlify/Vercel frontend URL manually
+      - key: FRONTEND_URL
+        sync: false                  # same frontend URL, used inside notification emails
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.console.EmailBackend   # switch to smtp.EmailBackend + Gmail vars for real email

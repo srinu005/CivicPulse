@@ -5,3 +5,8 @@ django-cors-headers==4.9.0
 psycopg[binary]==3.3.6
 Pillow==12.1.1
 python-dotenv==1.2.2
+
+# Production deployment
+gunicorn==23.0.0
+whitenoise==6.8.2
+dj-database-url==2.3.0
